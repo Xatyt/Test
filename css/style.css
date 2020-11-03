@@ -1,0 +1,146 @@
+.countener {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.countener__btn  {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 25px;
+}
+
+.btn:disabled, .btn:disabled:hover {
+  background-color: gray;
+}
+
+.btn {
+  background-color: #026faa;
+  border-color: transparent;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  height: 70px;
+  width: 100px;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #009cf0;
+}
+
+.countener__search {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.search-btn {
+  height: 30px;
+  width: 100px;
+}
+
+.search {
+  width: 70%;
+}
+
+.search:hover,
+.search:active {
+  border: 1px solid  #026faa;
+}
+
+.search:focus {
+  outline: 1px solid  #026faa;
+}
+
+table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse; 
+  line-height: 1.1;
+  color: black;
+}
+
+tr {
+  cursor: pointer;
+}
+
+th {
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+  padding-left: 5px;
+  border: 1px dotted grey;
+}
+
+.nameId {
+  width: 50px;
+}
+
+.firstName, .lastName, .phone {
+  width: 100px;
+}
+
+.email {
+  width: 140px;
+}
+
+td {
+  font-size: 0.8em;
+  padding: 5px 7px;
+  border: 1px dotted grey;
+}
+
+textarea {
+  width: 100%;
+  min-height: 50px;
+}
+
+.arrow {
+  float: right;
+  margin: 0;
+  padding: 0;
+  max-width: 10px;
+  max-height: 10px;
+}
+
+.loading {
+  display: block;
+  margin: 0 auto;;
+  width: 70px;
+  height: 70px;
+}
+
+.hide {
+  display: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.pagination__list {
+  display: flex;
+	padding: 0;
+	list-style-type: none;
+}
+
+.pagination__list li {
+  width: 20px;
+  height: 20px;
+	margin-right: 5px;
+	padding: 10px;
+	border: 1px solid black;
+}
+
+.pagination__list li:hover, .pagination__list li.active {
+	cursor: pointer;
+	color:  #026faa;
+	border: 1px solid  #026faa;
+}

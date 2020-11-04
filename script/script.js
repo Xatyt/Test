@@ -34,9 +34,12 @@ const toggleLoading = () =>
   document.querySelector(".loading").classList.toggle("hidden");
 
 const getUsers = async (url) => {
-  const response = await fetch(url);
-
-  return await response.json();
+  try {
+    const response = await fetch(url);
+    return await response.json();
+  } catch (error) {
+    alert("Упс, что-то пошло не так:(");
+  }
 };
 
 const createSubRow = (row, item) => {
@@ -194,12 +197,7 @@ const filterTable = () => {
 };
 
 smallBtn.addEventListener("click", () => {
-  try {
-    createTable(smallData);
-  } catch (error) {
-    alert("фыоафоыофпо");
-  }
-
+  createTable(smallData);
   searchBtn.disabled = false;
 });
 

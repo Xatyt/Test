@@ -8,7 +8,7 @@ const searchBtn = document.querySelector(".search-btn");
 const pagination = document.querySelector(".pagination__list");
 
 const smallData =
-  "http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}";
+  "http://ww.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}";
 const bigData =
   "http://www.filltext.com/?rows=1000&id={number|1000}&firstName={firstName}&delay=3&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}";
 
@@ -34,11 +34,14 @@ const toggleLoading = () =>
   document.querySelector(".loading").classList.toggle("hidden");
 
 const getUsers = async (url) => {
+  toggleLoading();
   try {
     const response = await fetch(url);
     return await response.json();
   } catch (error) {
-    alert("Упс, что-то пошло не так:(");
+    alert(`Упс, что-то пошло не так:(`);
+  } finally {
+    toggleLoading();
   }
 };
 
@@ -123,13 +126,10 @@ const createTableContent = (data = users) => {
 };
 
 const createTable = (url) => {
-  toggleLoading();
-  getUsers(url)
-    .then((response) => {
-      users = response;
-      createTableContent();
-    })
-    .finally(toggleLoading);
+  getUsers(url).then((response) => {
+    users = response;
+    createTableContent();
+  });
 };
 
 const sortBy = (type, name) => {

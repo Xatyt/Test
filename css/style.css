@@ -1,10 +1,10 @@
-.countener {
+.container {
   max-width: 600px;
   margin: 0 auto;
   padding-top: 30px;
 }
 
-.countener__btn  {
+.container__btn  {
   width: 100%;
   display: flex;
   justify-content: space-around;
@@ -32,7 +32,7 @@
   background-color: #009cf0;
 }
 
-.countener__search {
+.container__search {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -115,7 +115,7 @@ textarea {
   height: 70px;
 }
 
-.hide {
+.hidden {
   display: none;
 }
 

@@ -8,43 +8,49 @@
     <script src="script/script.js" defer></script>
 </head>
 <body>
-
-    
-
-    <div class="countener">
-        
-        <div class="countener__btn">
+    <div class="container">
+        <div class="container__btn">
             <button type="submit" class="btn small-btn">
                 Маленькая база
             </button>
-            <div class="countener__loading">
-            
+            <div class="container__loading">
+                <img src="img/loader.gif" alt="" class="loading hidden">
             </div>
             <button type="submit" class="btn big-btn">
                 Большая база
             </button>
         </div>
         
-        <div class="countener__search">
+        <div class="container__search">
             <input type="search" class="search" placeholder="Начать поиск...">
             
             <button type="submit" class="btn search-btn" disabled>
                 Найти
             </button>
         </div>
+        
         <table>
             <thead>
                 <tr>
-                    <th class="nameId">id <img src="img/down.svg" alt="cursor" class="arrow"> </th>
-                    <th class="firstName">firstName <img src="img/down.svg" alt="cursor" class="arrow"></th>
-                    <th class="lastName">lastName <img src="img/down.svg" alt="cursor" class="arrow"></th>
-                    <th class="email">email <img src="img/down.svg" alt="cursor" class="arrow"></th>
-                    <th class="phone">phone <img src="img/down.svg" alt="cursor" class="arrow"></th>
+                    <th class="nameId" data-type="number" data-name="id">id 
+                        <img src="img/down.svg" alt="cursor" class="arrow" data-name="id"> 
+                    </th>
+                    <th class="firstName" data-type="string" data-name="firstName">firstName 
+                        <img src="img/down.svg" alt="cursor" class="arrow" data-name="firstName">
+                    </th>
+                    <th class="lastName" data-type="string" data-name="lastName">lastName 
+                        <img src="img/down.svg" alt="cursor" class="arrow" data-name="lastName">
+                    </th>
+                    <th class="email" data-type="string" data-name="email">email 
+                        <img src="img/down.svg" alt="cursor" class="arrow" data-name="email">
+                    </th>
+                    <th class="phone" data-type="number" data-name="phone">phone 
+                        <img src="img/down.svg" alt="cursor" class="arrow" data-name="phone">
+                    </th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
-
     </div> 
     
     <div class="pagination">

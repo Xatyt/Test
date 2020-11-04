@@ -1,244 +1,221 @@
-let users;
-let sortById = true;
-let sortFirst = true;
-let sortSecond = true;
-let sortEmail = true;
-let sortPhone = true;
+let users = [];
 
-const img = document.querySelectorAll('img');
-const table = document.querySelector('table');
-const tbody = document.querySelector('tbody');
-const bigBtn = document.querySelector('.big-btn');
-const smallBtn = document.querySelector('.small-btn');
-const searchBtn = document.querySelector('.search-btn');
-const div = document.querySelector('.countener__loading');
-const pagination = document.querySelector('.pagination__list');
+const table = document.querySelector("table");
+const tbody = document.querySelector("tbody");
+const bigBtn = document.querySelector(".big-btn");
+const smallBtn = document.querySelector(".small-btn");
+const searchBtn = document.querySelector(".search-btn");
+const pagination = document.querySelector(".pagination__list");
 
-const smallData = 'http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}';
-const bigData = 'http://www.filltext.com/?rows=1000&id={number|1000}&firstName={firstName}&delay=3&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}';
+const smallData =
+  "http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}";
+const bigData =
+  "http://www.filltext.com/?rows=1000&id={number|1000}&firstName={firstName}&delay=3&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&adress={addressObject}&description={lorem|32}";
 
-const image = {
-  urlUp : 'img/up.svg',
-  urlDown: 'img/down.svg',
+const CONFIG = {
+  rowsCount: 50,
+  activePage: 1,
 };
 
+const sortTypes = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  phone: true,
+};
+
+const imageUrl = {
+  Up: "img/up.svg",
+  Down: "img/down.svg",
+};
+
+const toggleLoading = () =>
+  document.querySelector(".loading").classList.toggle("hidden");
+
 const getUsers = async (url) => {
-  
-  div.insertAdjacentHTML('beforeEnd', `
-    <img src="img/loader.gif" alt="" class="loading">
-  `)
-
   const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Ошибка. Статус ошибки ${response.status}`);
-  }
 
   return await response.json();
 };
 
-const createElem = element => {
+const createSubRow = (row, item) => {
+  row.insertAdjacentHTML(
+    "afterEnd",
+    `
+    <tr class="subrow">
+      <td colspan="5">
+        Описание: <br>
+        <textarea>${item.description}</textarea><br>
+        Адрес проживания: <b>${item.adress.streetAddress}</b><br>
+        Город: <b>${item.adress.city}</b><br>
+        Провинция/штат: <b>${item.adress.state}</b><br>
+        Индекс: <b>${item.adress.zip}</b>
+      </td>
+    </tr>`
+  );
+};
 
-  const mainTr = document.createElement('tr');
-  mainTr.classList.add('mainstring');
+const createRow = (item) => {
+  const row = document.createElement("tr");
+  row.classList.add("mainrow");
 
-  mainTr.innerHTML = `
-    <td>${element.id}</td>
-    <td>${element.firstName}</td>
-    <td>${element.lastName}</td>
-    <td>${element.email}</td>
-    <td>${element.phone}</td>
+  row.innerHTML = `
+    <td>${item.id}</td>
+    <td>${item.firstName}</td>
+    <td>${item.lastName}</td>
+    <td>${item.email}</td>
+    <td>${item.phone}</td>
   `;
 
-  tbody.appendChild(mainTr);
+  row.onclick = () => {
+    const nextRow = row.nextElementSibling;
 
-  mainTr.addEventListener('click', evt => {
-    
-    const tr = evt.target.closest('tr');
-    const next = tr.nextElementSibling.classList.contains('substring');
-    
-    if (!tr) return;
-    if (!table.contains(tr)) return;
-
-    if(next) {
-      tr.nextElementSibling.remove();
+    if (nextRow && nextRow.classList.contains("subrow")) {
+      row.nextElementSibling.remove();
     } else {
-      tr.insertAdjacentHTML("afterEnd", `
-      <tr class="substring">
-        <td colspan="5">
-          Описание: <br>
-          <textarea>${element.description}</textarea><br>
-          Адрес проживания: <b>${element.adress.streetAddress}</b><br>
-          Город: <b>${element.adress.city}</b><br>
-          Провинция/штат: <b>${element.adress.state}</b><br>
-          Индекс: <b>${element.adress.zip}</b>
-        </td>
-      </tr>`);
+      createSubRow(row, item);
     }
-  })
-};
-
-const createPagination = data => {
-  
-  pagination.innerHTML = ' ';
-  let active;
-  let notesOnPage = 50;
-  let countOfItems = Math.ceil(data.length / notesOnPage);
-  let items = [];
-
-  for (let i = 1; i <= countOfItems; i++) {
-    const li = document.createElement('li');
-    li.innerHTML = i;
-    pagination.appendChild(li);
-    items.push(li);
-  }
-
-  const activePage = item => {
-
-    tbody.innerHTML = '';
-
-    if (active) {
-      active.classList.remove('active');
-    }
-    
-    active = item;
-    item.classList.add('active');
-
-    let pageNum = +item.innerHTML;
-    let start = (pageNum - 1) * notesOnPage;
-    let end = start + notesOnPage;
-    let notes = data.slice(start, end);
-
-    notes.forEach(element => createElem(element));
   };
 
-  activePage(items[0]);
-
-  items.forEach(item => {
-    item.addEventListener('click', () => {
-      activePage(item);
-    })
-  })
+  tbody.appendChild(row);
 };
 
-const createTable = url => {
+const renderSelectedPage = (pageNumber, data = users) => {
+  tbody.innerHTML = "";
+
+  if (document.querySelector(".active")) {
+    document.querySelector(".active").classList.remove("active");
+  }
+
+  if (data.length) {
+    pageNumber.classList.add("active");
+    let currentPage = pageNumber.innerHTML;
+    let start = (currentPage - 1) * CONFIG.rowsCount;
+    let end = start + CONFIG.rowsCount;
+    let rows = data.slice(start, end);
+    rows.forEach((row) => createRow(row));
+  }
+};
+
+const createTableContent = (data = users) => {
+  pagination.innerHTML = " ";
+  let countOfPages = Math.ceil(data.length / CONFIG.rowsCount);
+  let pageNumbers = [];
+  let activeItem = null;
+
+  for (let i = 1; i <= countOfPages; i++) {
+    const pageNumber = document.createElement("li");
+    pageNumber.innerHTML = i;
+    pageNumber.onclick = () => renderSelectedPage(pageNumber, data);
+
+    pagination.appendChild(pageNumber);
+    pageNumbers.push(pageNumber);
+
+    if (i === CONFIG.activePage) {
+      activeItem = pageNumber;
+    }
+  }
+  renderSelectedPage(activeItem || pageNumbers[0], data);
+};
+
+const createTable = (url) => {
+  toggleLoading();
   getUsers(url)
-  .then(response => { 
-    div.innerHTML = '';
-    users = response;
-    createPagination(users);
-})};
-
-const sortTable = column => {
-  
-  let usersSort;
-  if (tbody.innerHTML === '') {
-    alert('Пожалуйста. выберите базу');
-    return;
-  }
-
-  switch(column) {
-    case 0:
-      usersSort = users.sort((a,b) => {
-        if (sortById) {
-          img[column].attributes.src.nodeValue = image.urlUp;
-          return a.id > b.id ? 1 : -1;
-        } else {
-          img[column].attributes.src.nodeValue = image.urlDown;
-          return a.id < b.id ? 1 : -1;
-        }
-      });
-      sortById = !sortById;
-      break;
-    case 1: 
-      usersSort = users.sort((a,b) => {
-        if (sortFirst) {
-          img[column].attributes.src.nodeValue = image.urlUp;
-          return a.firstName.toUpperCase() > b.firstName.toUpperCase() ? 1 : -1;
-        } else {
-          img[column].attributes.src.nodeValue = image.urlDown;
-          return a.firstName.toUpperCase() < b.firstName.toUpperCase() ? 1 : -1;
-        }
-      });
-      sortFirst = !sortFirst;
-      break;
-    case 2:
-      usersSort = users.sort((a,b) => {
-        if (sortSecond) {
-          img[column].attributes.src.nodeValue = image.urlUp;
-          return a.lastName.toUpperCase() > b.lastName.toUpperCase() ? 1 : -1;
-        } else {
-          img[column].attributes.src.nodeValue = image.urlDown;
-          return a.lastName.toUpperCase() < b.lastName.toUpperCase() ? 1 : -1;
-        }
-      });
-      sortSecond = !sortSecond;
-      break;
-    case 3:
-      usersSort = users.sort((a,b) => {
-        if (sortEmail) {
-          img[column].attributes.src.nodeValue = image.urlUp;
-          return a.email.toUpperCase() > b.email.toUpperCase() ? 1 : -1;
-        } else {
-          img[column].attributes.src.nodeValue = image.urlDown;
-          return a.email.toUpperCase() < b.email.toUpperCase() ? 1 : -1;
-        }
-      });
-      sortEmail = !sortEmail;
-      break;
-    case 4:
-      usersSort = users.sort((a,b) => {
-        if (sortPhone) {
-          img[column].attributes.src.nodeValue = image.urlUp;
-          return a.phone > b.phone ? 1 : -1;
-        } else {
-          img[column].attributes.src.nodeValue = image.urlDown;
-          return a.phone < b.phone ? 1 : -1;
-        }
-      });
-      sortPhone = !sortPhone;
-      break;
-  }
-
-  createPagination(usersSort);
+    .then((response) => {
+      users = response;
+      createTableContent();
+    })
+    .finally(toggleLoading);
 };
 
-smallBtn.addEventListener('click', () => {
-  createTable(smallData);
-  searchBtn.disabled = false;
-});
+const sortBy = (type, name) => {
+  let sort = null;
 
-bigBtn.addEventListener('click', () => {
-  createTable(bigData);
-  searchBtn.disabled = false;
-});
+  if (type === "string") {
+    sort = users.sort((a, b) => {
+      if (sortTypes[name]) {
+        return a[name].toUpperCase() > b[name].toUpperCase() ? 1 : -1;
+      } else {
+        return a[name].toUpperCase() < b[name].toUpperCase() ? 1 : -1;
+      }
+    });
+  }
 
-searchBtn.addEventListener('click', () => {
-  const searchInput = document.querySelector('.search');
-  const filter = searchInput.value.toUpperCase();
-  
-  const usersFilter = users.filter(obj => {
+  sort = users.sort((a, b) => {
+    if (sortTypes[name]) {
+      return a[name] > b[name] ? 1 : -1;
+    } else {
+      return a[name] < b[name] ? 1 : -1;
+    }
+  });
 
+  const arrows = [...document.querySelectorAll("img")];
+  const imageArrow = arrows.find((item) => item.dataset.name === name);
+  imageArrow.attributes.src.nodeValue = sortTypes[name]
+    ? imageUrl.Up
+    : imageUrl.Down;
+
+  sortTypes[name] = !sortTypes[name];
+
+  return sort;
+};
+
+const sortTable = (type, name) => {
+  let usersSort;
+  if (tbody.innerHTML === "") {
+    alert("Пожалуйста. выберите базу");
+  } else {
+    usersSort = sortBy(type, name);
+  }
+  createTableContent(usersSort);
+};
+
+const filterTable = () => {
+  const searchInput = document.querySelector(".search");
+  const inputValue = searchInput.value.toUpperCase();
+
+  const usersFilter = users.filter((obj) => {
     let flag = false;
-    Object.values(obj).forEach(val => {
-      if (val.toString().toUpperCase().indexOf(filter) > -1) {
+    Object.values(obj).forEach((value) => {
+      if (value.toString().toUpperCase().indexOf(inputValue) > -1) {
         flag = true;
         return;
       }
     });
-
     if (flag) return obj;
-
   });
 
-  createPagination(usersFilter);
+  if (usersFilter.length === 0) {
+    alert("Совпадений не найдено");
+  }
+
+  createTableContent(usersFilter);
+};
+
+smallBtn.addEventListener("click", () => {
+  try {
+    createTable(smallData);
+  } catch (error) {
+    alert("фыоафоыофпо");
+  }
+
+  searchBtn.disabled = false;
 });
 
-table.addEventListener('click', evt => {
+bigBtn.addEventListener("click", () => {
+  createTable(bigData);
+  searchBtn.disabled = false;
+});
+
+searchBtn.addEventListener("click", () => {
+  filterTable();
+});
+
+table.addEventListener("click", (evt) => {
   const target = evt.target;
-  const column = target.cellIndex;
-
-  if (target.nodeName !== 'TH') return;
-
-  sortTable(column);
+  const { type, name } = target.dataset;
+  if (target.nodeName === "TH") {
+    sortTable(type, name);
+  }
 });
